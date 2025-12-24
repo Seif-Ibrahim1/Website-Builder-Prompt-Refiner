@@ -38,16 +38,23 @@ export class IdeaService {
             "tech_stack": "Recommended frontend/backend tools",
             "ui_style": "Visual vibe (e.g., Minimalist, Dark Mode)"
           },
-          "generated_prompt": "A highly detailed, professional prompt that the user can copy and paste into an AI coding tool to build this exact website."
+          "generated_prompt": "A highly detailed, professional prompt..."
         }
       `;
 
       const result = await this.model.generateContent(prompt);
       const response = await result.response;
-      const text = response.text();
+      let text = response.text();
+      // 1. Clean up Markdown code blocks if they exist
+      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-      // Since we requested JSON mimeType, we can safely parse it
-      return JSON.parse(text);
+      // 2. Log the raw text if parsing fails (for debugging)
+      try {
+        return JSON.parse(text);
+      } catch (parseError) {
+        console.error("Failed to parse AI response. Raw text:", text);
+        throw new InternalServerErrorException('AI returned invalid JSON format');
+      }
 
     } catch (error) {
       console.error("AI Error:", error);
