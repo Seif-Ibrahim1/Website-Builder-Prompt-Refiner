@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { IdeaResponse } from "@/types/idea";
 import { Layers, Lightbulb, Code2, Palette } from "lucide-react";
+import ReactMarkdown from 'react-markdown'; // Import the renderer
 
 interface IdeaResultProps {
   data: IdeaResponse;
@@ -14,7 +15,6 @@ export function IdeaResult({ data }: IdeaResultProps) {
         
         {/* Left Column: Strategy */}
         <div className="space-y-6">
-            {/* UPDATED COLOR: text-[#0AF085] */}
             <div className="flex items-center gap-2 text-[#0AF085] mb-4">
                 <Lightbulb className="w-5 h-5" />
                 <h3 className="text-lg font-semibold">Strategy & Concept</h3>
@@ -33,7 +33,6 @@ export function IdeaResult({ data }: IdeaResultProps) {
 
          {/* Right Column: Features & Tech */}
         <div className="space-y-6">
-             {/* UPDATED COLOR: text-[#0AF085] */}
              <div className="flex items-center gap-2 text-[#0AF085] mb-4">
                 <Layers className="w-5 h-5" />
                  <h3 className="text-lg font-semibold">Features & Tech</h3>
@@ -76,13 +75,32 @@ export function IdeaResult({ data }: IdeaResultProps) {
 
       {/* Bottom Section: The Prompt */}
       <div className="space-y-4">
-        {/* UPDATED COLOR: text-[#0AF085] */}
         <h3 className="text-lg font-semibold text-[#0AF085]">✨ Ready-to-Use Prompt</h3>
         
         <div className="bg-[#0A0118]/50 rounded-xl p-6 border border-purple-500/20 shadow-inner shadow-purple-900/20">
-            <pre className="text-sm font-mono text-purple-200/90 whitespace-pre-wrap overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-transparent pr-2">
+            {/* Replaced <pre> with <ReactMarkdown> 
+              We pass custom 'components' to style the markdown elements 
+            */}
+            <div className="text-sm text-purple-200/90 overflow-y-auto max-h-[300px] scrollbar-thin scrollbar-thumb-purple-700 scrollbar-track-transparent pr-2">
+              <ReactMarkdown
+                components={{
+                  // Bold text becomes Green
+                  strong: ({node, ...props}) => <span className="font-bold text-[#0AF085]" {...props} />,
+                  // Lists get bullets and padding
+                  ul: ({node, ...props}) => <ul className="list-disc pl-5 space-y-1 mb-4" {...props} />,
+                  ol: ({node, ...props}) => <ol className="list-decimal pl-5 space-y-1 mb-4" {...props} />,
+                  li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                  // Paragraphs get spacing
+                  p: ({node, ...props}) => <p className="mb-4 leading-relaxed last:mb-0" {...props} />,
+                  // Headings get size and color
+                  h1: ({node, ...props}) => <h1 className="text-xl font-bold text-white mb-2" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-lg font-bold text-white mb-2" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-base font-bold text-white mb-1" {...props} />,
+                }}
+              >
                 {data.generated_prompt}
-            </pre>
+              </ReactMarkdown>
+            </div>
         </div>
       </div>
     </div>
